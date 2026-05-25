@@ -1,6 +1,10 @@
 import pypdf
+import logging
 from groq import Groq
 import json
+
+# Suppress pypdf warnings
+logging.getLogger("pypdf").setLevel(logging.ERROR)
 from jobspy import scrape_jobs
 import pandas as pd
 
@@ -46,19 +50,39 @@ def search_jobs(keywords, locations=["Bengaluru", "Hyderabad", "Chennai"], resul
     search_term = " ".join(keywords) if isinstance(keywords, list) else keywords
 
     for loc in locations:
+        # Glassdoor often has issues with specific location strings, Indeed and LinkedIn are more stable.
+        # We'll try them one by one or handle failure gracefully.
+        search_location = f"{loc}, India"
+        if loc.lower() == "remote":
+            search_location = "Remote"
+
         try:
             jobs = scrape_jobs(
                 site_name=["linkedin", "indeed", "glassdoor"],
                 search_term=search_term,
-                location=f"{loc}, India",
+                location=search_location,
                 results_wanted=results_per_location,
                 hours_old=72,
                 country_indeed='india'
             )
-            if not jobs.empty:
+            if jobs is not None and not jobs.empty:
                 all_jobs.append(jobs)
         except Exception as e:
             print(f"Error searching in {loc}: {e}")
+            # Fallback: try without Glassdoor if it's the culprit (based on logs)
+            try:
+                jobs = scrape_jobs(
+                    site_name=["linkedin", "indeed"],
+                    search_term=search_term,
+                    location=search_location,
+                    results_wanted=results_per_location,
+                    hours_old=72,
+                    country_indeed='india'
+                )
+                if jobs is not None and not jobs.empty:
+                    all_jobs.append(jobs)
+            except Exception as e2:
+                print(f"Fallback search failed for {loc}: {e2}")
 
     if not all_jobs:
         return pd.DataFrame()
