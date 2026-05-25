@@ -24,7 +24,7 @@ def extract_keywords_from_resume(resume_text, api_key):
     """
 
     completion = client.chat.completions.create(
-        model="llama-3.3-70b-specdec",
+        model="llama-3.3-70b-versatile",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that extracts job keywords from resumes. Respond only with JSON."},
             {"role": "user", "content": prompt}
@@ -89,7 +89,7 @@ def evaluate_job_match(resume_text, job_description, job_title, api_key):
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-specdec",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": "You are a professional technical recruiter evaluating job matches. Respond only with JSON."},
                 {"role": "user", "content": prompt}
