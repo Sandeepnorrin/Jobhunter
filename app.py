@@ -12,8 +12,8 @@ with st.sidebar:
     groq_api_key = st.text_input("Groq API Key", type="password")
     locations = st.multiselect(
         "Preferred Locations",
-        ["Bengaluru", "Hyderabad", "Chennai", "Mumbai", "Pune", "Delhi", "Remote"],
-        default=["Bengaluru", "Hyderabad", "Chennai"]
+        ["Bengaluru", "Hyderabad", "Chennai", "Mumbai", "Pune", "Delhi", "Remote", "Kochi", "Coimbatore", "Trivandrum", "Lucknow"],
+        default=["Bengaluru", "Hyderabad", "Chennai", "Kochi", "Coimbatore", "Trivandrum", "Lucknow"]
     )
     results_per_location = st.slider("Results per location", 5, 30, 10)
     max_evaluations = st.slider("Max jobs to evaluate with AI", 1, 20, 5)
